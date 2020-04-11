@@ -4,6 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -25,11 +29,16 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println("login")
-	<-make(chan bool)
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
+	discord.Close()
 }
 
 func onReady(session *discordgo.Session, ready *discordgo.Ready) {
 	sendMessage(session, "574884574778359844", "おはよう世界")
+	session.UpdateStatus(1, "Goのべんつよ、たのしいね")
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -39,10 +48,33 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == "ping" {
 		sendMessage(s, m.ChannelID, "Pong!")
+		return
 	}
 
 	if m.Content == "pong" {
 		sendMessage(s, m.ChannelID, "Ping!")
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!update") {
+		if len(m.Content) <= 8 {
+			return
+		}
+		messageWithOutPrefix := m.Content[8:]
+		s.UpdateStatus(0, messageWithOutPrefix)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!status") {
+		if len(m.Content) <= 8 {
+			return
+		}
+		messageWithOutPrefix := m.Content[8:9]
+		i, err := strconv.Atoi(messageWithOutPrefix)
+		if err != nil {
+			sendMessage(s, m.ChannelID, "数値を入力してね")
+		}
+		s.UpdateStatus(i, "ステータスをアップデートしました")
 	}
 }
 
