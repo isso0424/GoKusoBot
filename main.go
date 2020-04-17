@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"./handler"
+	"isso/go/firstbot/handler"
 
 	"github.com/bwmarrin/discordgo"
 )

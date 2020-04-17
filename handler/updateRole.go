@@ -4,7 +4,7 @@ import "github.com/bwmarrin/discordgo"
 
 func UpdateRole(session *discordgo.Session, event *discordgo.GuildRoleUpdate, roles []discordgo.Role) {
 	newRole := event.GuildRole.Role
-	if alreadyRoleExists(newRole.Name) {
+	if alreadyRoleExists(newRole.Name, roles) {
 		return
 	}
 	message := "新しいクソRole***†" + newRole.Name + "†***が追加されたよ"
