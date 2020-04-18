@@ -14,6 +14,10 @@ import (
 
 var roles []discordgo.Role
 
+// テスト環境では574884574778359844
+// 限界開発鯖では690909527461199922
+const rootChannelID string = "574884574778359844"
+
 func main() {
 	discord, err := discordgo.New()
 	discord.Token = loadTokenFromEnv()
@@ -28,6 +32,7 @@ func main() {
 	discord.AddHandler(updateRole)
 
 	err = discord.Open()
+	defer discord.Close()
 
 	if err != nil {
 		fmt.Println(err)
@@ -36,8 +41,6 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-
-	discord.Close()
 }
 
 func createNewRole(session *discordgo.Session, event *discordgo.GuildRoleCreate) {
@@ -45,11 +48,11 @@ func createNewRole(session *discordgo.Session, event *discordgo.GuildRoleCreate)
 }
 
 func updateRole(s *discordgo.Session, e *discordgo.GuildRoleUpdate) {
-	handler.UpdateRole(s, e, roles)
+	handler.UpdateRole(s, e, roles, rootChannelID)
 }
 
 func onReady(session *discordgo.Session, ready *discordgo.Ready) {
-	handler.OnReadyMessageSend(session, ready, "574884574778359844", &roles)
+	handler.OnReadyMessageSend(session, ready, rootChannelID, &roles)
 }
 
 func loadTokenFromEnv() string {

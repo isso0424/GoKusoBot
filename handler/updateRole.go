@@ -2,15 +2,14 @@ package handler
 
 import "github.com/bwmarrin/discordgo"
 
-func UpdateRole(session *discordgo.Session, event *discordgo.GuildRoleUpdate, roles []discordgo.Role) {
+func UpdateRole(session *discordgo.Session, event *discordgo.GuildRoleUpdate, roles []discordgo.Role, rootChannelID string) {
 	newRole := event.GuildRole.Role
 	if alreadyRoleExists(newRole.Name, roles) {
 		return
 	}
 	message := "新しいクソRole***†" + newRole.Name + "†***が追加されたよ"
 
-	session.ChannelMessageSend("574884574778359844", message)
-	//sendMessage(session, "690909527461199922", message)
+	session.ChannelMessageSend(rootChannelID, message)
 }
 
 func alreadyRoleExists(roleName string, roles []discordgo.Role) bool {
