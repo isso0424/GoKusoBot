@@ -27,7 +27,7 @@ func main() {
 	}
 
 	discord.AddHandler(onReady)
-	discord.AddHandler(handler.OnReadyMessageSend)
+	discord.AddHandler(onMessageCreate)
 	discord.AddHandler(createNewRole)
 	discord.AddHandler(updateRole)
 
@@ -41,6 +41,10 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
+}
+
+func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	handler.OnMessageCreate(s, m)
 }
 
 func createNewRole(session *discordgo.Session, event *discordgo.GuildRoleCreate) {

@@ -39,7 +39,7 @@ func rollDice(useDice dice) int {
 	result := 0
 	rand.Seed(time.Now().UnixNano())
 	for range make([]int, useDice.diceCount) {
-		result += rand.Intn(useDice.diceFaces + 1)
+		result += rand.Intn(useDice.diceFaces) + 1
 	}
 	return result
 }
